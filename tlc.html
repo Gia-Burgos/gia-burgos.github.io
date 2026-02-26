@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Traffic Light Controller (Moore FSM) | Computer Hardware</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/site.css">
+  <script defer src="assets/site.js"></script>
+
+</head>
+
+<body class="site">
+
+<main class="container doc">
+
+<h1>Traffic Light Controller (TLC)</h1>
+<p class="meta"><strong>SystemVerilog</strong> · Moore FSM · One-hot encoding · 1 Hz timer integration</p>
+
+<div>
+  <span class="tag">One-hot FSM</span>
+  <span class="tag">Moore Outputs</span>
+  <span class="tag">Timer Handshake</span>
+  <span class="tag">Early-cut Green Window</span>
+  <span class="tag">Self-checking-ish TB</span>
+</div>
+
+<div class="nav">
+  <a href="computer-architecture.html">← Computer Hardware</a>
+  <a href="index.html">Main Portfolio</a>
+  <a href="tlc-visuals.html">Visuals / Brainstorming</a>
+</div>
+
+<h2>Overview</h2>
+<p>
+Implemented a traffic light controller as a <strong>one-hot Moore FSM</strong> driven by a <strong>1 Hz tick</strong> and an
+external <strong>5-bit down-counter</strong>. The controller enforces a minimum green time, supports a cuttable extension window,
+and sequences pedestrian signals and interlock all-red phases between directions.
+</p>
+
+<div class="callout">
+  Timing + state intent: minimum green is enforced, extension is cuttable, and interlock all-red phases occur between direction changes. :contentReference[oaicite:1]{index=1}
+</div>
+
+<h2>Design Goals</h2>
+<ul>
+  <li><strong>Deterministic timing:</strong> each state lasts an integer number of seconds using the external down-counter.</li>
+  <li><strong>Fairness / bounded green:</strong> minimum green is guaranteed; extension ends early if the opposing direction has demand. :contentReference[oaicite:2]{index=2}</li>
+  <li><strong>Clean control/data boundary:</strong> FSM generates <code>timer_init</code> + <code>timer_load</code> and Moore outputs.</li>
+  <li><strong>Readable hardware structure:</strong> one-hot encoding and <code>case (1'b1)</code> next-state logic.</li>
+</ul>
+
+<h2>State Model</h2>
+<div class="two-col">
+  <div>
+    <h3>NS Phase</h3>
+    <ul>
+      <li>Startup All-Red</li>
+      <li>NS Minimum Green (15s, not cuttable)</li>
+      <li>NS Extension Green (≤9s, cuttable)</li>
+      <li>NS Ped Flash (6s)</li>
+      <li>NS Yellow (4s)</li>
+      <li>NS Ped Red (1s)</li>
+      <li>All-Red Interlock (2s)</li>
+    </ul>
+  </div>
+  <div>
+    <h3>EW Phase (Mirror)</h3>
+    <ul>
+      <li>EW Minimum Green (15s, not cuttable)</li>
+      <li>EW Extension Green (≤9s, cuttable)</li>
+      <li>EW Ped Flash (6s)</li>
+      <li>EW Yellow (4s)</li>
+      <li>EW Ped Red (1s)</li>
+      <li>All-Red Interlock (2s)</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Key Implementation Details</h2>
+
+<h3>1) One-hot next-state logic with early-cut extension</h3>
+<p>
+Minimum green runs to timer expiry. Extension green can end early if the opposing direction indicates demand (sensor high).
+</p>
+<pre><code>// One-hot “case (1'b1)” next-state logic (excerpt)
+always_comb begin
+  next = state;
+
+  unique case (1'b1)
+    state[S_ALL_RED_START]: if (t0) next = (13'b1 &lt;&lt; S_NS_MIN_GREEN);
+
+    state[S_NS_MIN_GREEN]: if (t0)
+      next = (car_ew ? (13'b1 &lt;&lt; S_NS_PED_FLASH)
+                    : (13'b1 &lt;&lt; S_NS_EXT_GREEN));
+
+    state[S_NS_EXT_GREEN]: if (car_ew || t0)
+      next = (13'b1 &lt;&lt; S_NS_PED_FLASH);
+
+    // ... mirror EW path ...
+  endcase
+
+  if (rst_any) next = (13'b1 &lt;&lt; S_ALL_RED_START);
+end</code></pre>
+
+<h3>2) Timer handshake on state entry</h3>
+<p>
+The TLC loads the down-counter when entering a new state by mapping the next state to a duration (seconds) and pulsing
+<code>timer_load</code> for exactly one slow tick.
+</p>
+<pre><code>// Duration ROM (map one-hot state → seconds)
+function automatic [4:0] duration_for(input logic [12:0] s);
+  unique case (1'b1)
+    s[S_ALL_RED_START]: duration_for = D_START;   // 5
+    s[S_NS_MIN_GREEN]:  duration_for = D_MINGRN;  // 15
+    s[S_NS_EXT_GREEN]:  duration_for = D_EXTGRN;  // 9
+    s[S_NS_PED_FLASH]:  duration_for = D_FLASH;   // 6
+    s[S_NS_YELLOW]:     duration_for = D_YELLOW;  // 4
+    s[S_NS_PED_RED]:    duration_for = D_PEDRED;  // 1
+    s[S_ALL_RED_NS2EW]: duration_for = D_ALLRED;  // 2
+    // ... EW mirror ...
+    default:            duration_for = D_START;
+  endcase
+endfunction
+
+// Load timer on state entry
+always_ff @(posedge clk_slow) begin
+  if (rst_any) begin
+    state        &lt;= (13'b1 &lt;&lt; S_ALL_RED_START);
+    timer_init_r &lt;= D_START;
+    timer_load_r &lt;= 1'b1;
+  end else begin
+    state        &lt;= next;
+    timer_init_r &lt;= duration_for(next);
+    timer_load_r &lt;= (state != next); // 1-tick pulse on entry
+  end
+end</code></pre>
+
+<h3>3) Moore output decode (lights + pedestrian macros)</h3>
+<p>
+Outputs depend only on the current state. Defaults are safe (all-red + don’t-walk) and then overridden per-state.
+</p>
+<pre><code>// Moore output decode (excerpt)
+always_comb begin
+  light_ns_i = `LIGHT_RED;
+  light_ew_i = `LIGHT_RED;
+  ped_sigs_i = `PED_NS_AMBER_EW_AMBER;
+
+  unique case (1'b1)
+    state[S_NS_MIN_GREEN], state[S_NS_EXT_GREEN]: begin
+      light_ns_i = `LIGHT_GREEN;
+      light_ew_i = `LIGHT_RED;
+      ped_sigs_i = `PED_NS_WHITE_EW_AMBER;
+    end
+
+    state[S_NS_YELLOW]: begin
+      light_ns_i = `LIGHT_YELLOW;
+      light_ew_i = `LIGHT_RED;
+      ped_sigs_i = `PED_NS_ORANGE_EW_AMBER;
+    end
+
+    // ... EW mirror + all-red windows ...
+  endcase
+end</code></pre>
+
+<h2>Testbench Strategy</h2>
+<p>
+Built a fast simulation environment that:
+</p>
+<ul>
+  <li>Generates a “slow tick” via a tiny clock divider</li>
+  <li>Integrates the external 5-bit down-counter timer module</li>
+  <li>Drives sensor patterns to exercise early-cut behavior in both directions</li>
+  <li>Logs every timer load to verify state durations (5, 15, 9, 6, 4, 1, 2…)</li>
+</ul>
+
+<pre><code>// TB instrumentation: print every state entry load
+always @(posedge clk_en) begin
+  if (load) begin
+    $display("[%0t] LOAD: init=%0d  timer_out=%0d  NS=%0d  EW=%0d  PEDS=0x%0h",
+             $time, init, timer_out, light_ns, light_ew, ped_sigs);
+  end
+end
+
+// Early-cut example in NS extension window
+wait_ticks(15);           // NS minimum green
+car_ew = 1'b1; wait_ticks(2); car_ew = 1'b0;  // trigger cut</code></pre>
+
+<h2>Skills Demonstrated</h2>
+<ul>
+  <li>FSM design (Moore, one-hot encoding)</li>
+  <li>Clock-domain separation (fast clock vs. 1 Hz tick sequencing)</li>
+  <li>Timer/FSM handshake protocols (load/init/en)</li>
+  <li>Macro-based output encoding for clean hardware I/O</li>
+  <li>Verification mindset: targeted stimulus + instrumentation</li>
+</ul>
+
+</main>
+
+</body>
+</html>
