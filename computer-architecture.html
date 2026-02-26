@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Computer Hardware | Portfolio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/site.css">
+  <script defer src="assets/site.js"></script>
+
+  
+</head>
+<body class="site">
+
+<main class="container doc">
+
+<header>
+  <h1>Computer Hardware</h1>
+  <p class="subtle">
+    A focused collection of digital design and computer architecture work, emphasizing clean structural HDL and datapath-level thinking.
+  </p>
+
+  <div class="nav">
+    <!-- Update these to match your real site structure -->
+    <a href="index.html">Main Portfolio</a>
+    <a href="computer-architecture.html">Hardware</a>
+  </div>
+</header>
+
+<section class="grid">
+  <article class="card">
+    <h2><a href="alu.html">32-bit ALU (SystemVerilog)</a></h2>
+    <p>
+      Structural ALU supporting arithmetic, logic, comparison, and shifts with full flag generation and opcode-controlled output selection.
+    </p>
+    <div class="tags">
+      <span class="tag">SystemVerilog</span>
+      <span class="tag">Datapath Design</span>
+      <span class="tag">CLA</span>
+      <span class="tag">Mux Trees</span>
+    </div>
+  </article>
+
+  <!-- Add more hardware projects as you make them -->
+
+    <article class="card">
+    <h2><a href="tlc.html">Traffic Light Controller (Moore FSM)</a></h2>
+    <p>
+      One-hot Moore FSM driven by a 1 Hz tick + external 5-bit down-counter. Minimum green, cuttable extension window,
+      interlock all-red phases, and macro-based lamp/ped outputs.
+    </p>
+    <div class="tags">
+      <span class="tag">SystemVerilog</span>
+      <span class="tag">FSM</span>
+      <span class="tag">One-hot</span>
+      <span class="tag">Timer Handshake</span>
+      <span class="tag">Testbench</span>
+    </div>
+  </article>
+
+    <article class="card">
+    <h2><a href="cpu.html">Multicycle CPU</a></h2>
+    <p>
+      Multicycle CPU built with a clean datapath + FSM controller split. Progresses from an initial control-design plan
+      into a working core, then expands to immediates, memory access, and control flow (branches + jumps).
+    </p>
+    <div class="tags">
+      <span class="tag">SystemVerilog</span>
+      <span class="tag">CPU</span>
+      <span class="tag">FSM Control</span>
+      <span class="tag">Datapath</span>
+      <span class="tag">ISA</span>
+    </div>
+  </article>
+  
+  <article class="card">
+    <h2>More projects (coming soon)</h2>
+    <p>
+      This section will grow with additional modules (register files, control logic, pipelining, caches, etc.).
+    </p>
+    <div class="tags">
+      <span class="tag">In Progress</span>
+    </div>
+  </article>
+</section>
+
+<footer>
+  <p>Tip: keep each project page short + visual (block diagrams, module list, tests/results).</p>
+</footer>
+
+</main>
+
+</body>
+</html>

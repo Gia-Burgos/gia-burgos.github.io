@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Multicycle CPU (Parts 4B–4C) | Computer Hardware</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/site.css">
+  <script defer src="assets/site.js"></script>
+
+</head>
+<body class="site">
+
+<main class="container doc">
+
+<div class="nav">
+  <a href="computer-architecture.html">← Computer Hardware</a>
+  <a href="index.html">Main Portfolio</a>
+  <a href="cpu-visuals.html">Design Visuals →</a>
+</div>
+
+<h1>Multicycle CPU</h1>
+<p class="meta"><strong>SystemVerilog</strong> · Multicycle datapath + controller FSM · Incremental ISA support</p>
+
+<div>
+  <span class="tag">Datapath + Control Split</span>
+  <span class="tag">FSM Controller</span>
+  <span class="tag">R-type + I-type</span>
+  <span class="tag">lw/sw</span>
+  <span class="tag">beq/bne/j/jal/jr</span>
+</div>
+
+<h2>Overview</h2>
+<p>
+Built a multicycle CPU by separating a reusable datapath from an FSM-based controller. The project follows a control-first workflow:
+plan the instruction paths and control signals, implement a working execute/writeback core, then extend the same architecture to support
+immediates, memory operations, and control flow (branches and jumps) — all without changing the fundamental datapath/control split.
+</p>
+
+<h2>Design → Implementation Progression</h2>
+<div class="grid">
+  <div class="card">
+    <h3>1) Control-First Design (FSM planning)</h3>
+    <p>
+      Started by mapping instruction classes onto a multicycle controller FSM and identifying
+      the required control signals per state (fetch, decode, execute, writeback, and memory/control-flow paths).
+    </p>
+    <p class="small">
+      The annotated FSM diagram and instruction checklist are in the visuals page.
+    </p>
+    <p><a href="cpu-visuals.html">Design Visuals (FSM + instruction plan) →</a></p>
+  </div>
+
+  <div class="card">
+    <h3>2) Working Core CPU</h3>
+    <p>
+      Implemented a multicycle datapath + controller split: the datapath holds state (PC, IR, A/B latches, ALUOut),
+      while the FSM drives control signals. Baseline execution supports R-type ALU ops via Funct decoding.
+    </p>
+    <p class="small">
+      Core state loop: <code>FETCH → DECODE → EXEC → WB → FETCH</code>.
+    </p>
+  </div>
+</div>
+
+<pre><code>// Core multicycle flow (baseline)
+S0_FETCH:  next = S1_DECODE;
+S1_DECODE: next = (Opcode == `OP_RTYPE) ? S6_EXEC_R : S0_FETCH;
+S6_EXEC_R: next = S7_WB_R;
+S7_WB_R:   next = S0_FETCH;</code></pre>
+
+<h2>Final CPU Features</h2>
+<div class="grid">
+  <div class="card">
+    <h3>Instruction Support</h3>
+    <ul>
+      <li><strong>R-type:</strong> add, sub, and, or, xor, nor, sll, srl, sra, slt</li>
+      <li><strong>I-type ALU:</strong> addi, andi, ori, xori, slti</li>
+      <li><strong>Memory:</strong> lw / sw</li>
+      <li><strong>Control flow:</strong> beq, bne, j, jal, jr (+ nop)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Datapath + Control Highlights</h3>
+    <ul>
+      <li><strong>Immediate selection:</strong> zero-extend for andi/ori/xori; sign-extend otherwise</li>
+      <li><strong>Branching:</strong> branch target precomputed in DECODE; PC enable uses opcode + Zero</li>
+      <li><strong>PC source mux:</strong> PC+4, branch target, jump target, or JR (rs)</li>
+      <li><strong>JAL:</strong> writes <code>$ra</code> with PC+4 while performing jump</li>
+      <li><strong>Memory interface:</strong> <code>IorD</code> selects PC vs ALUOut for mem address; SW asserts write enable only in store stage</li>
+    </ul>
+  </div>
+</div>
+
+<pre><code>// Branch decision + PC enable (datapath excerpt)
+assign takeBranch = ((Opcode == `OP_BEQ) & Zero) |
+                    ((Opcode == `OP_BNE) & ~Zero);
+assign PCEn = PCWrite | (Branch & takeBranch);
+
+// PCSrc selects: +4, branch target(ALUOut), jump target, or JR via A</code></pre>
+
+<h2>Code Highlights</h2>
+<p>
+Below are representative excerpts showing the datapath/control split, the multicycle controller FSM structure,
+and the PC update logic used for branches and jumps.
+</p>
+
+<h3>Top-level CPU: datapath + controller wiring</h3>
+<pre><code>// cpu.sv (excerpt)
+datapath dp (
+  .clk, .clk_en, .rst,
+  // from controller
+  .ALUSrcA, .ALUSrcB, .PCSrc, .IorD, .IRWrite, .PCWrite,
+  .RegDst, .MemtoReg, .RegWrite, .ALUControl,
+  .AWrite, .BWrite, .Branch,
+  // memory
+  .r_data, .mem_addr, .w_data, .wr_en,
+  // back to controller
+  .Zero, .Opcode, .Funct,
+  // debug
+  .instr, .regs_ok
+);
+
+controller ctrl (
+  .clk, .clk_en, .rst,
+  .Opcode(Opcode),
+  .Funct(Funct),
+  .Zero(Zero),
+  .ALUSrcA, .ALUSrcB, .PCSrc, .IorD, .IRWrite, .PCWrite,
+  .RegDst, .MemtoReg, .RegWrite, .ALUControl,
+  .AWrite, .BWrite, .Branch
+);</code></pre>
+
+<h3>Controller: decode → state selection + R-type execute</h3>
+<pre><code>// controller.sv (excerpt)
+S0_FETCH:  next = S1_DECODE;
+
+S1_DECODE: begin
+  unique case (Opcode)
+    `OP_RTYPE: next = (Funct == `F_JR) ? S13_JR : S6_EXEC_R;
+    `OP_LW,
+    `OP_SW:    next = S2_MEM_ADDR;
+    `OP_BEQ,
+    `OP_BNE:   next = S10_BR_COMP;
+    `OP_J:     next = S11_JUMP;
+    `OP_JAL:   next = S12_JAL_WB;
+    `OP_ADDI,
+    `OP_ANDI,
+    `OP_ORI,
+    `OP_XORI,
+    `OP_SLTI:  next = S8_EXEC_I;
+    default:   next = S0_FETCH;
+  endcase
+end
+
+S6_EXEC_R: begin
+  ALUSrcA = 1'b1;     // A
+  ALUSrcB = 2'b00;    // B
+  unique case (Funct)
+    `F_ADD: ALUControl = `ALU_ADD;
+    `F_SUB: ALUControl = `ALU_SUB;
+    `F_AND: ALUControl = `ALU_AND;
+    `F_OR : ALUControl = `ALU_OR;
+    `F_SLL: ALUControl = `ALU_SLL;
+    `F_SRL: ALUControl = `ALU_SRL;
+    `F_SRA: ALUControl = `ALU_SRA;
+    `F_SLT: ALUControl = `ALU_SLT;
+    default: ALUControl = `ALU_ADD;
+  endcase
+end</code></pre>
+
+<h3>Datapath: branch decision + PC source muxing</h3>
+<pre><code>// datapath.sv (excerpt)
+// takeBranch = (beq && Zero) || (bne && ~Zero)
+assign takeBranch = ((Opcode == `OP_BEQ) & Zero) |
+                    ((Opcode == `OP_BNE) & ~Zero);
+assign PCEn = PCWrite | (Branch & takeBranch);
+
+// PCSrc selects next PC
+always_comb begin
+  unique case (PCSrc)
+    2'b00: PC_d = pc_plus4;   // PC + 4
+    2'b01: PC_d = pc_branch;  // branch target from ALUOut
+    2'b10: PC_d = pc_jump;    // jump target
+    2'b11: PC_d = A_q;        // jr (rs)
+    default: PC_d = pc_plus4;
+  endcase
+end</code></pre>
+
+<p class="small">
+Excerpts shown are the most representative modules (CPU integration, controller FSM, and PC/branch/jump datapath logic).
+Full source available upon request.
+</p>
+  
+<h2>Verification</h2>
+<ul>
+  <li>R-type test program to validate ALU ops and shifts</li>
+  <li>Full mix test program: immediates + lw/sw + beq/bne + j/jal/jr</li>
+</ul>
+</html>

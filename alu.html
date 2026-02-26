@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>32-bit ALU | Computer Hardware</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/site.css">
+  <script defer src="assets/site.js"></script>
+
+</head>
+
+<body class="site">
+
+<main class="container doc">
+
+<h1>32-bit Structural ALU</h1>
+<p class="meta">
+SystemVerilog · Pure Structural HDL · Modular Datapath Architecture
+</p>
+
+<div>
+<span class="tag">Carry Lookahead Adder</span>
+<span class="tag">Complementary 32-bit Mux Tree</span>
+<span class="tag">Barrel Shifter (Structural)</span>
+<span class="tag">Two’s Complement SUB</span>
+<span class="tag">Flag Logic</span>
+<span class="tag">Opcode-Controlled Datapath</span>
+</div>
+
+<div class="nav">
+<a href="computer-architecture.html">← Computer Hardware</a>
+<a href="index.html">Main Portfolio</a>
+</div>
+
+<!-- OVERVIEW -->
+<h2>Overview</h2>
+<p>
+Designed and implemented a fully structural 32-bit Arithmetic Logic Unit in SystemVerilog.
+The design strictly avoids behavioral shortcuts, relying on modular subcomponents,
+explicit datapath wiring, and tree-based multiplexing for operation selection.
+</p>
+
+<!-- ARCHITECTURE -->
+<h2>Architecture</h2>
+<ul>
+<li>32-bit datapath</li>
+<li>3-bit opcode control</li>
+<li>8:1 complementary 32-bit multiplexer tree</li>
+<li>Carry Lookahead Adder (CLA) for ADD and SUB</li>
+<li>Structural barrel shifters (SLL, SRL, SRA)</li>
+<li>Dedicated flag modules: zero, equal, overflow</li>
+<li>Modular instantiation of all functional units</li>
+</ul>
+
+<!-- OPERATIONS -->
+<h2>Supported Operations</h2>
+<ul>
+<li>AND</li>
+<li>ADD (Carry Lookahead)</li>
+<li>SUB (Two’s Complement via CLA reuse)</li>
+<li>SLT (Set Less Than)</li>
+<li>SRL (Shift Right Logical)</li>
+<li>SRA (Shift Right Arithmetic)</li>
+<li>SLL (Shift Left Logical)</li>
+</ul>
+
+<!-- DESIGN DETAILS -->
+<h2>Key Design Implementation</h2>
+
+<div class="section">
+<h3>Carry Lookahead Arithmetic</h3>
+<p>
+Arithmetic operations are implemented using a 32-bit CLA module.
+Subtraction reuses the adder through two’s complement logic (invert Y + carry-in = 1).
+MSB carry-in and carry-out are routed into overflow detection logic.
+</p>
+</div>
+
+<div class="section">
+<h3>Complementary 32-bit Mux Tree</h3>
+<p>
+All operation outputs feed into a structural 8:1 32-bit multiplexer tree.
+Opcode selection determines the active result without behavioral case statements.
+</p>
+</div>
+
+<div class="section">
+<h3>Structural Barrel Shifters</h3>
+<p>
+SLL, SRL, and SRA are implemented structurally using staged shift networks.
+Shift amount is derived from y[4:0] and routed through combinational logic layers.
+No behavioral shift operators are used.
+</p>
+</div>
+
+<div class="section">
+<h3>Flag Logic</h3>
+<ul>
+<li><strong>zero</strong> — asserted when result equals 0</li>
+<li><strong>equal</strong> — direct operand comparison</li>
+<li><strong>overflow</strong> — derived from MSB carry logic</li>
+</ul>
+</div>
+
+<!-- CODE SAMPLE -->
+<h2>Top-Level ALU Structure (Excerpt)</h2>
+
+<pre><code>
+module STUDENT_alu (
+    input  logic [31:0] x,
+    input  logic [31:0] y,
+    input  logic [2:0]  op,
+    output logic [31:0] z,
+    output logic zero, equal, overflow
+);
+
+    // AND
+    logic [31:0] z_and;
+    and32 and_unit (.x(x), .y(y), .z(z_and));
+
+    // ADD (CLA)
+    logic [31:0] z_add;
+    logic cout_add, c31_add;
+
+    CLA add_unit_cla (
+        .a(x),
+        .b(y),
+        .cin(1'b0),
+        .s(z_add),
+        .cout(cout_add),
+        .c31(c31_add)
+    );
+
+    // SUB (Two’s Complement)
+    logic [31:0] y_inv;
+    assign y_inv = ~y;
+
+    logic [31:0] z_sub;
+    logic cout_sub, c31_sub;
+
+    CLA sub_unit_cla (
+        .a(x),
+        .b(y_inv),
+        .cin(1'b1),
+        .s(z_sub),
+        .cout(cout_sub),
+        .c31(c31_sub)
+    );
+
+    // Final 8:1 Result Mux
+    mux8_32bit_tree result_mux (
+        .D0(z_and),
+        .D1(z_add),
+        .D2(z_sub),
+        .D3(z_slt),
+        .D4(z_srl),
+        .D5(z_sra),
+        .D6(z_sll),
+        .D7(32'b0),
+        .S(op),
+        .Y(z)
+    );
+
+endmodule
+</code></pre>
+
+<!-- SKILLS -->
+<h2>Technical Skills Demonstrated</h2>
+<ul>
+<li>Structural SystemVerilog design</li>
+<li>Datapath-level architecture</li>
+<li>Carry lookahead implementation</li>
+<li>Modular hardware abstraction</li>
+<li>Signal routing and mux tree construction</li>
+<li>Overflow and flag logic design</li>
+<li>Barrel shifter implementation</li>
+</ul>
+
+</main>
+
+</body>
+</html>
