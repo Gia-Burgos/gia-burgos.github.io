@@ -5,129 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Giancarla Burgos | Portfolio</title>
 
-  <style>
-    :root {
-      --primary: #4b2e83; /* deep purple */
-      --bg: #ffffff;
-      --muted: #666;
-    }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/site.css">
+  <script defer src="assets/site.js"></script>
 
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;
-      background: var(--bg);
-      color: #111;
-    }
-
-    /* NAV */
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 24px 48px;
-      border-bottom: 1px solid #eee;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: #111;
-      margin-right: 24px;
-      font-weight: 500;
-    }
-
-    nav a:last-child {
-      margin-right: 0;
-    }
-
-    .nav-left {
-      display: flex;
-      align-items: center;
-    }
-
-    .nav-right a {
-      margin-left: 24px;
-      font-weight: 500;
-    }
-
-    /* HERO */
-    .hero {
-      max-width: 1000px;
-      margin: 120px auto 0;
-      padding: 0 24px;
-      text-align: center;
-    }
-
-    .hero h1 {
-      font-size: clamp(2.5rem, 5vw, 4rem);
-      line-height: 1.1;
-      margin-bottom: 24px;
-    }
-
-    .hero h1 span {
-      color: var(--primary);
-    }
-
-    .hero p {
-      font-size: 1.15rem;
-      color: var(--muted);
-      max-width: 720px;
-      margin: 0 auto 32px;
-      line-height: 1.6;
-    }
-
-    /* BUTTONS */
-    .buttons {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-top: 24px;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      padding: 14px 24px;
-      border-radius: 10px;
-      font-weight: 600;
-      text-decoration: none;
-      border: 2px solid var(--primary);
-      color: var(--primary);
-    }
-
-    .btn.primary {
-      background: var(--primary);
-      color: white;
-    }
-
-    .btn.disabled {
-      opacity: 0.6;
-      cursor: default;
-      pointer-events: none;
-    }
-
-    /* FOOTER NOTE */
-    .note {
-      margin-top: 48px;
-      font-size: 0.95rem;
-      color: #777;
-    }
-  </style>
+  
 </head>
 
-<body>
+<body class="site">
 
   <nav>
-    <div class="nav-left">
-      <a href="#">Home</a>
-      <a style="opacity:0.5; pointer-events:none;">Projects</a>
-      <a style="opacity:0.5; pointer-events:none;">Resume</a>
-    </div>
-    <div class="nav-right">
-       <!-- <a href="https://github.com/gia-burgos">GitHub</a> -->
-      <a href="mailto:gburgos@harvard.college.edu">Email</a>
+    <div class="logo">Giancarla Burgos</div>
+    <div>
+      <a href="computer-architecture.html">Computer Architecture</a>
+      <a href="circuits.html">Circuits</a>
+      <a href="product-management.html">Product Management</a>
+      <a href="personal-projects.html">Personal Projects</a>
+      <a href="mailto:gburgos@harvard.college.edu">Contact</a>
     </div>
   </nav>
 
@@ -135,26 +31,60 @@
     <h1>
       Hi, I’m <span>Giancarla</span>!
     </h1>
-
     <p>
-      This portfolio is currently under construction.
-      I’m actively developing and refining my projects, design, and technical work.
+      I’m passionate about building thoughtful technical systems across hardware and product.
+      My work thus far spans computer architecture, circuits, product management, and independent engineering projects. I have included some snippets of my work
+      throughout my time in college, though there are quite a few more examples I'd love to chat more about with you!
     </p>
+  </section>
 
-    <p>
-      <strong>Full project details are available upon request.</strong>
-    </p>
+  <section class="sections" id="work">
+    <div class="sections-inner">
+      <h2>Explore My Work</h2>
 
-    <div class="buttons">
-      <a class="btn primary" href="mailto:gburgos@harvard.college.edu">Contact</a>
-      <a class="btn disabled">Projects (Coming Soon)</a>
-      <a class="btn disabled">Resume (Coming Soon)</a>
-    </div>
+      <div class="grid">
+        <a href="computer-architecture.html" class="card">
+          <h3>Computer Architecture</h3>
+          <p>Processor design, memory systems, performance analysis, and low-level system optimization.</p>
+        </a>
 
-    <div class="note">
-      © Giancarla Burgos · Built with GitHub Pages
+        <a href="circuits.html" class="card">
+          <h3>Circuits</h3>
+          <p>Analog and digital circuit design, simulation, PCB development, and embedded systems.</p>
+        </a>
+
+        <a href="product-management.html" class="card">
+          <h3>Product Management</h3>
+          <p>Technical product strategy, user research, cross-functional execution, and systems thinking.</p>
+        </a>
+
+        <a href="ui-ux.html" class="card">
+          <h3>UI/UX Design</h3>
+          <p>
+            User-centered design case studies focused on research synthesis, low-fidelity prototyping,
+            interaction flows, and reducing user uncertainty in high-stakes decision contexts.
+          </p>
+        </a>
+        
+        <a href="model-training.html" class="card">
+          <h3>Model Training</h3>
+          <p>
+            Synthetic-to-real object detection pipeline using Unity Perception, YOLOv8, and finetuning to address domain shift.
+          </p>
+        </a>
+
+        <a href="personal-projects.html" class="card">
+          <h3>Personal Projects</h3>
+          <p>Independent builds exploring robotics, hardware prototypes, and experimental ideas.</p>
+        </a>
+      </div>
+
     </div>
   </section>
+
+  <footer>
+    © 2024 Giancarla Burgos · Built with GitHub Pages
+  </footer>
 
 </body>
 </html>

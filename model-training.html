@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Synthetic → Real Object Detection | Portfolio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/site.css">
+  <script defer src="assets/site.js"></script>
+
+</head>
+<body class="site">
+
+<main class="container doc">
+
+<div class="nav">
+  <a href="index.html">← Main Portfolio</a>
+  <a href="model-training-visuals.html">Visuals / Results →</a>
+</div>
+
+<h1>Synthetic → Real Object Detection</h1>
+<p class="meta"><strong>Unity Perception + SynthDet</strong> · <strong>YOLOv8</strong> · <strong>Weights & Biases</strong> · Domain gap analysis</p>
+
+<div>
+  <span class="tag">Synthetic Data</span>
+  <span class="tag">YOLOv8 Training</span>
+  <span class="tag">W&B Tracking</span>
+  <span class="tag">Domain Shift</span>
+  <span class="tag">Finetuning</span>
+</div>
+
+<h2>Overview</h2>
+<p>
+Trained an object detector starting from synthetic labeled images generated in Unity (Perception + SynthDet),
+then evaluated on real images and finetuned to reduce synthetic-to-real domain mismatch.
+</p>
+
+<div class="callout">
+  <strong>Key takeaway:</strong> Synthetic-only training did not transfer to real photos (0 correct detections before finetuning),
+  so real-image finetuning was required to bridge lighting/background/texture differences.
+</div>
+
+<h2>Pipeline</h2>
+<div class="grid">
+  <div class="card">
+    <h3>1) Synthetic dataset generation</h3>
+    <ul>
+      <li>Unity scene + RGB camera prefab for image capture</li>
+      <li>Exported labeled data via SynthDet</li>
+      <li>Converted annotations to YOLO format; split train/val (8:2)</li>
+    </ul>
+    <p class="small">See screenshots + workflow notes in the visuals page.</p>
+  </div>
+
+  <div class="card">
+    <h3>2) Training + analysis</h3>
+    <ul>
+      <li>Trained YOLOv8 on synthetic data</li>
+      <li>Logged metrics + artifacts to Weights & Biases</li>
+      <li>Reviewed confusion matrix + prediction examples to diagnose errors</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Results</h2>
+<div class="grid">
+  <div class="card">
+    <h3>Synthetic-only training</h3>
+    <ul>
+      <li><strong>mAP@0.5:</strong> 0.248</li>
+      <li><strong>mAP@0.5–0.95:</strong> 0.191</li>
+      <li><strong>Precision:</strong> 0.287</li>
+      <li><strong>Recall:</strong> 0.248</li>
+    </ul>
+    <p class="small">Reported on the project summary slide deck.</p>
+  </div>
+
+  <div class="card">
+    <h3>Synthetic → real gap</h3>
+    <p>
+      When evaluated on real photos, the synthetic-trained model produced
+      <strong>no correct detections across all classes</strong> prior to finetuning.
+    </p>
+    <p class="small">
+      This made domain shift visible and guided the finetuning plan.
+    </p>
+  </div>
+</div>
+
+<h2>Finetuning with Real Images</h2>
+<div class="grid">
+  <div class="card">
+    <h3>Real dataset</h3>
+    <ul>
+      <li>Collected + labeled a real-image set</li>
+      <li>Converted to YOLO format; split train/val (8:2)</li>
+      <li>Used “full-image” bounding boxes (one class per image)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Finetune metrics (real images)</h3>
+    <ul>
+      <li><strong>mAP@0.5:</strong> ~0.252</li>
+      <li><strong>mAP@0.5–0.95:</strong> ~0.249</li>
+      <li><strong>Precision:</strong> ~0.289</li>
+      <li><strong>Recall:</strong> ~0.264</li>
+    </ul>
+    <p class="small">Limited by small per-class coverage and coarse labels.</p>
+  </div>
+</div>
+
+<h2>Code Highlights</h2>
+<p class="small">
+These excerpts come from the training notebook and show the core mechanics: SynthDet → YOLO conversion,
+training with W&B logging, and finetuning from a saved checkpoint.
+</p>
+
+<h3>1) SynthDet labels → YOLO format (normalize boxes)</h3>
+<pre><code>// Parse SynthDet label IDs and names
+label_map = {}
+for root, dirs, files in os.walk(SEARCH_ROOT):
+    for file in files:
+        if file == "step0.frame_data.json":
+            with open(os.path.join(root, file), "r") as f:
+                data = json.load(f)
+            for ann in data["captures"][0]["annotations"]:
+                if ann["@type"].endswith("BoundingBox2DAnnotation"):
+                    for box in ann["values"]:
+                        label_map[box["labelId"]] = box["labelName"]
+
+sorted_ids = sorted(label_map.keys())
+labelid_to_yolo_index = {orig_id: i for i, orig_id in enumerate(sorted_ids)}
+yolo_index_to_name = [label_map[orig_id] for orig_id in sorted_ids]
+
+// Convert boxes to YOLO normalized format: (xc, yc, w, h) in [0,1]
+xc = (x + w / 2) / IMG_W
+yc = (y + h / 2) / IMG_H
+w /= IMG_W
+h /= IMG_H
+out.write(f"{class_id} {xc:.6f} {yc:.6f} {w:.6f} {h:.6f}\n")</code></pre>
+
+<h3>2) Build YOLO dataset.yaml (class name mapping)</h3>
+<pre><code>with open(yaml_path, "w") as f:
+    f.write("path: /content/yolo_dataset\n")
+    f.write("train: images/train\n")
+    f.write("val: images/val\n")
+    f.write("names:\n")
+    for i, name in enumerate(yolo_index_to_name):
+        f.write(f"  {i}: {name}\n")</code></pre>
+
+<h3>3) Train YOLOv8 + log to Weights & Biases</h3>
+<pre><code>model = YOLO("yolov8n.pt")
+add_wandb_callback(model)
+
+model.train(
+    data=yaml_path,
+    epochs=60,
+    imgsz=416,
+    batch=2,
+    cache="disk",
+    resume=False,
+    patience=15,
+    verbose=True
+)
+
+metrics = model.val(plots=True, save_json=True)
+wandb.log({"confusion_matrix": wandb.Image("runs/detect/train/confusion_matrix.png")})</code></pre>
+
+<h3>4) Finetune from a synthetic-trained checkpoint (best.pt)</h3>
+<pre><code>model = YOLO("/content/drive/MyDrive/yolov8_models/best.pt")
+
+wandb.init(project="synthdet-yolo", name="resume-training")
+add_wandb_callback(model)
+
+model.train(
+    data=yaml_path,
+    epochs=30,
+    batch=2,
+    imgsz=416,
+    resume=False
+)
+wandb.finish()</code></pre>
+
+<h2>What I Learned</h2>
+<ul>
+  <li><strong>Domain shift is real:</strong> synthetic-only training did not transfer to real photos without finetuning.</li>
+  <li><strong>Data quality dominates:</strong> limited real samples per class + “full-image boxes” constrain learning.</li>
+  <li><strong>Error analysis matters:</strong> confusion matrix + prediction previews surfaced failure modes quickly.</li>
+</ul>
+
+<h2>Next Steps</h2>
+<ul>
+  <li>Collect more real images per class (more diversity in lighting/backgrounds)</li>
+  <li>Use tighter object-level bounding boxes instead of full-image boxes</li>
+  <li>Balance classes + targeted finetuning for low-recall categories</li>
+</ul>
+
+<p class="small">
+See confusion matrices, detection examples, and workflow screenshots on the visuals page.
+</p>
+
+</main>
+
+</body>
+</html>
