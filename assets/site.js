@@ -1,14 +1,57 @@
-// Minimal, content-safe UI polish: scroll reveals + optional crossfade swap.
+// ==========================
+// Site JS: theme toggle + reveal + projects filter
+// ==========================
 
 (function(){
   const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // 1) Scroll reveal (adds no content, only classes)
+  // --------------------------
+  // THEME
+  // --------------------------
+  const root = document.documentElement;
+  const STORAGE_KEY = "gb_theme";
+
+  function setTheme(theme){
+    root.setAttribute("data-theme", theme);
+    try { localStorage.setItem(STORAGE_KEY, theme); } catch {}
+    const btn = document.querySelector('[data-theme-toggle]');
+    if (btn){
+      const isDark = theme === "dark";
+      btn.setAttribute("aria-pressed", String(isDark));
+      btn.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+      const label = btn.querySelector('[data-theme-label]');
+      if (label) label.textContent = isDark ? "Dark" : "Light";
+    }
+  }
+
+  function initTheme(){
+    let saved = null;
+    try { saved = localStorage.getItem(STORAGE_KEY); } catch {}
+    if (saved === "dark" || saved === "light") return setTheme(saved);
+
+    // Default to light, but respect system preference on first visit if you want:
+    const sysDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setTheme(sysDark ? "dark" : "light");
+  }
+
+  initTheme();
+
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest('[data-theme-toggle]');
+    if (!btn) return;
+    const current = root.getAttribute("data-theme") || "light";
+    setTheme(current === "dark" ? "light" : "dark");
+  });
+
+  // --------------------------
+  // REVEAL (your existing idea, kept)
+  // --------------------------
   const revealTargets = [];
   const selectors = [
     '.hero',
     '.sections-inner',
     '.card',
+    '.t-card',
     'iframe',
     'h1',
     'h2',
@@ -19,7 +62,6 @@
 
   selectors.forEach(sel => {
     document.querySelectorAll(sel).forEach(el => {
-      // Avoid adding reveal to very small elements like individual list items.
       if (el.tagName === 'LI') return;
       if (!el.classList.contains('reveal')) el.classList.add('reveal');
       revealTargets.push(el);
@@ -41,50 +83,36 @@
     revealTargets.forEach(el => el.classList.add('is-visible'));
   }
 
-  // 2) Optional crossfade swap for paired images.
-  // Usage (doesn't require changing your existing content, only adding attributes if desired):
-  // <img data-swap-group="bw" data-swap-index="0" ...>
-  // <img data-swap-group="bw" data-swap-index="1" ...>
-  // They will crossfade in place every 4s.
-  if (!prefersReduced) {
-    const groups = new Map();
-    document.querySelectorAll('img[data-swap-group]').forEach(img => {
-      const g = img.getAttribute('data-swap-group');
-      const arr = groups.get(g) || [];
-      arr.push(img);
-      groups.set(g, arr);
-    });
+  // --------------------------
+  // PROJECT FILTER (projects.html)
+  // --------------------------
+  function initProjectsFilter(){
+    const container = document.querySelector('[data-projects]');
+    if (!container) return;
 
-    groups.forEach((imgs) => {
-      if (imgs.length < 2) return;
-      imgs.sort((a,b) => (parseInt(a.getAttribute('data-swap-index')||'0',10) - parseInt(b.getAttribute('data-swap-index')||'0',10)));
+    const chips = document.querySelectorAll('[data-filter]');
+    const cards = container.querySelectorAll('[data-category]');
 
-      // Make them stack
-      const parent = imgs[0].parentElement;
-      if (!parent) return;
-      parent.style.position = parent.style.position || 'relative';
-
-      imgs.forEach((img, i) => {
-        img.style.position = 'absolute';
-        img.style.inset = '0';
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = 'cover';
-        img.style.transition = 'opacity 700ms ease';
-        img.style.opacity = i === 0 ? '1' : '0';
+    function applyFilter(cat){
+      cards.forEach(card => {
+        const c = (card.getAttribute('data-category') || '').split(',').map(s => s.trim());
+        const show = (cat === 'all') ? true : c.includes(cat);
+        card.style.display = show ? '' : 'none';
       });
 
-      // Ensure parent has height
-      const rect = imgs[0].getBoundingClientRect();
-      if (rect.height > 0) parent.style.height = rect.height + 'px';
+      chips.forEach(ch => {
+        const on = ch.getAttribute('data-filter') === cat;
+        ch.setAttribute('aria-pressed', String(on));
+      });
+    }
 
-      let idx = 0;
-      setInterval(() => {
-        const next = (idx + 1) % imgs.length;
-        imgs[idx].style.opacity = '0';
-        imgs[next].style.opacity = '1';
-        idx = next;
-      }, 4000);
+    chips.forEach(ch => {
+      ch.addEventListener('click', () => applyFilter(ch.getAttribute('data-filter')));
     });
+
+    // default
+    applyFilter('all');
   }
+
+  initProjectsFilter();
 })();
