@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Projects | Giancarla Burgos</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/site.css">
+  <script defer src="assets/site.js"></script>
+</head>
+
+<body class="site">
+
+  <nav>
+    <div class="nav-left">
+      <div class="logo">Giancarla Burgos</div>
+    </div>
+
+    <div class="nav-right">
+      <a href="index.html">Home</a>
+      <a href="projects.html">Projects</a>
+      <a href="experience.html">Experience</a>
+      <a href="product-management.html">Product</a>
+      <a href="computer-architecture.html">Engineering</a>
+      <a href="model-training.html">Machine Learning</a>
+      <a href="ui-ux.html">UI/UX</a>
+
+      <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+        <span class="theme-dot" aria-hidden="true"></span>
+        <span data-theme-label>Light</span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="container doc">
+    <h1>Projects</h1>
+    <p class="meta">
+      Filter by category. Each project can evolve into a deeper startup-style writeup (problem → approach → tradeoffs → results).
+    </p>
+
+    <div class="filterbar" role="toolbar" aria-label="Project filters">
+      <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
+      <button class="chip" type="button" data-filter="engineering" aria-pressed="false">Engineering</button>
+      <button class="chip" type="button" data-filter="circuits" aria-pressed="false">Circuits</button>
+      <button class="chip" type="button" data-filter="product" aria-pressed="false">Product</button>
+      <button class="chip" type="button" data-filter="ux" aria-pressed="false">UI/UX</button>
+      <button class="chip" type="button" data-filter="ml" aria-pressed="false">Machine Learning</button>
+      <button class="chip" type="button" data-filter="personal" aria-pressed="false">Personal</button>
+    </div>
+
+    <section class="grid" data-projects style="margin-top: 16px;">
+      <!-- Engineering -->
+      <a class="card" href="computer-architecture.html" data-category="engineering">
+        <h3>Computer Hardware Collection</h3>
+        <p>ALU, Traffic Light Controller FSM, Multicycle CPU. Datapaths, control, and structural HDL.</p>
+        <div class="pillrow">
+          <span class="pill">SystemVerilog</span><span class="pill">Datapaths</span><span class="pill">FSM</span>
+        </div>
+      </a>
+
+      <a class="card" href="alu.html" data-category="engineering">
+        <h3>32-bit Structural ALU</h3>
+        <p>Tree muxing, carry lookahead arithmetic, and structural barrel shifters.</p>
+        <div class="pillrow">
+          <span class="pill">Structural HDL</span><span class="pill">CLA</span><span class="pill">Mux Tree</span>
+        </div>
+      </a>
+
+      <a class="card" href="cpu.html" data-category="engineering">
+        <h3>Multicycle CPU</h3>
+        <p>Datapath + FSM controller split, expanding ISA support without changing fundamentals.</p>
+        <div class="pillrow">
+          <span class="pill">CPU</span><span class="pill">FSM Control</span><span class="pill">ISA</span>
+        </div>
+      </a>
+
+      <a class="card" href="tlc.html" data-category="engineering">
+        <h3>Traffic Light Controller (Moore FSM)</h3>
+        <p>One-hot Moore FSM with timer handshake and early-cut green extension logic.</p>
+        <div class="pillrow">
+          <span class="pill">FSM</span><span class="pill">One-hot</span><span class="pill">Timing</span>
+        </div>
+      </a>
+
+      <!-- Circuits -->
+      <a class="card" href="circuits.html" data-category="circuits">
+        <h3>Circuits Portfolio</h3>
+        <p>Op-amp audio chain, R-2R DAC + SAR ADC loop, and RLC step response characterization.</p>
+        <div class="pillrow">
+          <span class="pill">Instrumentation</span><span class="pill">LTspice</span><span class="pill">Mixed-signal</span>
+        </div>
+      </a>
+
+      <!-- Product -->
+      <a class="card" href="product-management.html" data-category="product">
+        <h3>Duolingo Proposal</h3>
+        <p>Feature proposal with market overview, competitor analysis, personas, and metrics.</p>
+        <div class="pillrow">
+          <span class="pill">Strategy</span><span class="pill">Research</span><span class="pill">Metrics</span>
+        </div>
+      </a>
+
+      <a class="card" href="duolingo-process.html" data-category="product">
+        <h3>Duolingo — Process</h3>
+        <p>How the proposal evolved: outline → synthesis → iteration → prototype pass.</p>
+        <div class="pillrow">
+          <span class="pill">Process</span><span class="pill">Iteration</span>
+        </div>
+      </a>
+
+      <!-- UI/UX -->
+      <a class="card" href="ui-ux.html" data-category="ux">
+        <h3>Restaurant Safety App — UX Case Study</h3>
+        <p>Designed to reduce uncertainty and decision fatigue for dietary restrictions.</p>
+        <div class="pillrow">
+          <span class="pill">Scannability</span><span class="pill">Decision flow</span><span class="pill">Research</span>
+        </div>
+      </a>
+
+      <!-- ML -->
+      <a class="card" href="model-training.html" data-category="ml">
+        <h3>Synthetic → Real Object Detection</h3>
+        <p>Unity Perception + YOLOv8 training, domain shift analysis, finetuning to close the gap.</p>
+        <div class="pillrow">
+          <span class="pill">YOLOv8</span><span class="pill">Domain Shift</span><span class="pill">W&B</span>
+        </div>
+      </a>
+
+      <!-- Personal -->
+      <a class="card" href="personal-projects.html" data-category="personal">
+        <h3>Personal Projects</h3>
+        <p>Independent builds. (You can turn these into “startup-style” deep dives over time.)</p>
+        <div class="pillrow">
+          <span class="pill">Builds</span><span class="pill">Prototypes</span>
+        </div>
+      </a>
+    </section>
+
+    <div style="margin-top: 26px;">
+      <a class="btn" href="index.html">← Back to Home</a>
+    </div>
+  </main>
+
+  <footer>
+    © 2026 Giancarla Burgos · Built with GitHub Pages
+  </footer>
+
+</body>
+</html>
