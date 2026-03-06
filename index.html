@@ -7,104 +7,119 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="assets/site.css">
   <script defer src="assets/site.js"></script>
-
-  
 </head>
 
 <body class="site">
 
   <nav>
-    <div class="logo">Giancarla Burgos</div>
-    <div>
-      <a href="computer-architecture.html">Computer Architecture</a>
-      <a href="circuits.html">Circuits</a>
-      <a href="product-management.html">Product Management</a>
-      <a href="personal-projects.html">Personal Projects</a>
-      <a href="mailto:gburgos@harvard.college.edu">Contact</a>
+    <div class="nav-left">
+      <div class="logo">Giancarla Burgos</div>
+    </div>
+
+    <div class="nav-right">
+      <a href="index.html">Home</a>
+      <a href="projects.html">Projects</a>
+      <a href="experience.html">Experience</a>
+      <a href="product-management.html">Product</a>
+      <a href="computer-architecture.html">Engineering</a>
+      <a href="model-training.html">Machine Learning</a>
+      <a href="ui-ux.html">UI/UX</a>
+
+      <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+        <span class="theme-dot" aria-hidden="true"></span>
+        <span data-theme-label>Light</span>
+      </button>
     </div>
   </nav>
 
-  <section class="hero">
-    <h1>
-      Hi, I’m <span>Giancarla</span>!
-    </h1>
-    <p>
-      I design and build human-centered technical systems at the intersection of engineering and product.
-  My work spans computer architecture, embedded systems, product strategy, and UI/UX design — translating complex systems into usable, thoughtful experiences.
-    </p>
-  </section>
+  <main>
+    <section class="hero">
+      <div>
+        <!-- Sample-like stacked bars -->
+        <div class="title-bars">
+          <div class="bar bar-1"><div class="bar-text">Giancarla Burgos</div></div>
+          <div class="bar bar-2"><div class="bar-text">Engineer</div></div>
+          <div class="bar bar-3"><div class="bar-text">Creative</div></div>
+        </div>
 
-  <section class="sections" id="work">
-    <div class="sections-inner">
-      <h2>Explore My Work</h2>
-
-      <div class="grid">
-        <a href="computer-architecture.html" class="card">
-          <h3>Computer Architecture</h3>
-          <p> Processor design, memory systems, performance analysis, and low-level optimization. Exploring how computational systems behave from the ground up.</p>
-        </a>
-
-        <a href="circuits.html" class="card">
-          <h3>Circuits</h3>
-          <p>Analog and digital circuit design, simulation, PCB development, and embedded systems. Building hardware that translates theory into physical systems.</p>
-        </a>
-
-        <a href="product-management.html" class="card">
-          <h3>Product Management</h3>
-          <p>Technical product strategy, user research, cross-functional execution, and systems thinking. Aligning complex systems with human needs and business outcomes</p>
-        </a>
-
-        <a href="ui-ux.html" class="card">
-          <h3>UI/UX Design</h3>
-          <p>
-            User-centered design case studies focused on research synthesis, low-fidelity prototyping,
-            interaction flows, and reducing user uncertainty in high-stakes decision contexts. 
+        <div class="hero-intro">
+          <p class="kicker">
+            I build thoughtful technical systems across hardware, product, and applied ML —
+            with strong UX instincts and a bias for clarity.
           </p>
-        </a>
-        
-        <a href="model-training.html" class="card">
-          <h3>Model Training</h3>
-          <p>
-            Synthetic-to-real object detection pipeline using Unity Perception, YOLOv8, and finetuning to address domain shift.
-          </p>
-        </a>
 
-        <a href="personal-projects.html" class="card">
-          <h3>Personal Projects</h3>
           <p>
-  I like building things, learning new skills, and getting a little better at them each time. The work here reflects that mindset — structured when it needs to be, creative when it can be.
-</p>
-        </a>
+            My work spans computer architecture, circuits, product strategy, UI/UX case studies,
+            and model training pipelines. I’m especially interested in startup-style roles where I can
+            ship, iterate, and own problems end-to-end.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn primary" href="projects.html">Explore Projects →</a>
+            <a class="btn" href="experience.html">View Experience →</a>
+            <a class="btn" href="mailto:gburgos@harvard.college.edu">Contact</a>
+          </div>
+        </div>
       </div>
 
-    </div>
-  </section>
+      <!-- Portrait / image slot -->
+      <aside class="hero-card">
+        <!-- Replace this div with an <img> when you have your photo -->
+        <!-- <img class="portrait-img" src="your-photo.jpg" alt="Giancarla Burgos"> -->
+        <div class="portrait">Add your photo here</div>
 
+        <p class="kicker" style="margin: 14px 2px 0;">
+          Harvard College · Electrical Engineering / Systems · Product + ML + Hardware
+        </p>
+      </aside>
+    </section>
 
+    <section class="sections" id="work">
+      <div class="sections-inner">
+        <h2>Explore by Category</h2>
+        <p class="kicker">Same content you already have—just presented in a cleaner way.</p>
 
-  <section class="reflection">
-    <div class="sections-inner">
-      <h2>On Iteration & Growth</h2>
-  
-      <p>
-        Design is iterative by nature. While the work showcased here reflects my thinking and process at different stages, I’m constantly refining how I approach clarity, usability, and system behavior.
-      </p>
-  
-      <p>
-        If you notice areas that could be improved, whether it be interaction details, visual hierarchy, user flows, or edge cases, I would genuinely love to talk about them. Thoughtful critique is one of the most valuable parts of growing as a designer and engineer.
-      </p>
-  
-      <p>
-        I’m always open to conversations about what works, what doesn’t, and how systems can be made more intuitive and human-centered.
-      </p>
-    </div>
-  </section>
+        <div class="grid" style="margin-top:16px;">
+          <a href="computer-architecture.html" class="card">
+            <h3>Engineering</h3>
+            <p>Computer architecture, HDL, datapaths, FSMs, and system-level thinking.</p>
+          </a>
+
+          <a href="circuits.html" class="card">
+            <h3>Circuits</h3>
+            <p>Hands-on measurement + simulation workflows, mixed-signal projects, instrumentation.</p>
+          </a>
+
+          <a href="product-management.html" class="card">
+            <h3>Product</h3>
+            <p>Research synthesis, feature strategy, metrics, and cross-functional execution.</p>
+          </a>
+
+          <a href="ui-ux.html" class="card">
+            <h3>UI/UX</h3>
+            <p>Case studies: uncertainty reduction, scannability, interaction flow design.</p>
+          </a>
+
+          <a href="model-training.html" class="card">
+            <h3>Machine Learning</h3>
+            <p>Synthetic→real training pipelines, domain shift analysis, finetuning workflows.</p>
+          </a>
+
+          <a href="personal-projects.html" class="card">
+            <h3>Personal Projects</h3>
+            <p>Independent builds exploring ideas across software/hardware experiments.</p>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <footer>
-    © 2024 Giancarla Burgos · Built with GitHub Pages
+    © 2026 Giancarla Burgos · Built with GitHub Pages
   </footer>
 
 </body>
