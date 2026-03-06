@@ -440,6 +440,16 @@ html[data-theme="dark"] .card.concept{
   box-shadow: 0 14px 34px rgba(0,0,0,0.10);
 }
 
+.card.card-link{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card.card-link .card-cta{
+  margin-top: auto;   /* pushes button to bottom */
+}
+
 /* CTA container */
 .card-cta{
   margin-top: 14px;
