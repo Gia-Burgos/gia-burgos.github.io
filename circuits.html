@@ -10,8 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/site.css">
   <script defer src="assets/site.js"></script>
-
-  
 </head>
 
 <body class="site">
@@ -33,8 +31,9 @@
   <section class="hero">
     <h1><span>Circuits</span></h1>
     <p>
-      Selected circuits projects focused on hands-on measurement and simulation workflows —
-      building, debugging, and validating analog and mixed-signal systems with real instrumentation.
+      Selected hands-on circuits projects emphasizing clear experimental thinking:
+      defining expected behavior, instrumenting the system, diagnosing mismatches,
+      and communicating results through structured measurements and tradeoffs.
     </p>
   </section>
 
@@ -45,12 +44,12 @@
 
       <!-- AUDIO PROJECT -->
       <article class="card">
-        <h3>Op-Amps & Audio Signals (Multi-Stage Audio Chain)</h3>
+        <h3>Op-Amps & Audio Signals — Multi-Stage Audio Chain</h3>
 
         <p class="meta">
-          Designed and built an end-to-end audio chain including input conditioning,
-          active filtering, and a power amplifier capable of driving a low-impedance speaker load.
-          Performance was validated stage-by-stage using oscilloscope measurements.
+          Designed and built a multi-stage audio chain (input conditioning → active filtering → output amplification)
+          intended to drive a low-impedance speaker load. I validated performance stage-by-stage using oscilloscope
+          measurements and treated debugging as an iterative, evidence-driven process.
         </p>
 
         <div class="pillrow">
@@ -61,71 +60,61 @@
           <span class="pill">Oscilloscope</span>
         </div>
 
-        <div class="audio-row">
-          <div class="shot">
-            <img src="Speaker Build.JPG" alt="Audio amplifier breadboard build" />
-            <div class="cap">
-              Multi-stage amplifier chain constructed on breadboard with input conditioning,
-              filtering, and output stage driving a speaker.
-            </div>
-          </div>
+        <h4 style="margin-top:16px;">How I worked</h4>
+        <ul>
+          <li><strong>Set expectations first:</strong> predicted gain, cutoff behavior, and headroom limits before building.</li>
+          <li><strong>Validated in slices:</strong> measured each stage independently to isolate issues early.</li>
+          <li><strong>Debugged systematically:</strong> traced distortion/noise back to biasing, coupling, and saturation constraints.</li>
+          <li><strong>Communicated clearly:</strong> summarized results as “what we expected vs. what we observed vs. what we changed.”</li>
+        </ul>
 
-          <div class="shot">
-            <img src="Speaker Osc.JPG" alt="Oscilloscope capture of audio signal" />
-            <div class="cap">
-              Tektronix oscilloscope capture verifying expected gain and signal behavior across stages.
-            </div>
-          </div>
-        </div>
+        <h4 style="margin-top:12px;">What I’d optimize next</h4>
+        <ul>
+          <li>Improve noise performance with grounding/layout discipline and component selection.</li>
+          <li>Increase output stability and reduce clipping under load with better headroom planning.</li>
+        </ul>
       </article>
 
-      
-      
-      
       <!-- DAC + SAR PROJECT -->
       <article class="card">
-        <h3>R-2R DAC + SAR ADC (Arduino + Comparator)</h3>
-      
+        <h3>R-2R DAC + SAR ADC — Arduino + Comparator</h3>
+
         <p class="meta">
-          Implemented a 4-bit R-2R ladder DAC and paired it with a SAR-style ADC loop using a comparator
-          and Arduino GPIO control/readback. Explored quantization behavior, thresholding, and mixed-signal
-          integration through stepwise approximation.
+          Implemented a 4-bit R-2R ladder DAC and paired it with a SAR-style ADC loop using a comparator and Arduino GPIO control.
+          This project focused on mixed-signal integration: translating an algorithmic concept (successive approximation)
+          into measurable, testable electrical behavior.
         </p>
-      
+
         <div class="pillrow">
           <span class="pill">R-2R Ladder</span>
           <span class="pill">Comparator</span>
           <span class="pill">Arduino GPIO</span>
           <span class="pill">Mixed-Signal</span>
         </div>
-      
-        <div class="audio-row">
-          <div class="shot">
-            <img src="Lab67 circuit build.JPG" alt="R-2R DAC and SAR ADC breadboard build with Arduino" />
-            <div class="cap">
-              Breadboard implementation of a 4-bit R-2R ladder DAC and SAR ADC loop using Arduino GPIO control and a comparator.
-            </div>
-          </div>
-      
-          <div class="shot">
-            <img src="Lab67 Osc.JPG" alt="Oscilloscope capture showing DAC/SAR behavior" />
-            <div class="cap">
-              Oscilloscope capture showing sampled/quantized behavior during successive approximation and DAC output settling.
-            </div>
-          </div>
-        </div>
-      </article>
 
-      
+        <h4 style="margin-top:16px;">How I worked</h4>
+        <ul>
+          <li><strong>Designed for observability:</strong> built the system so intermediate DAC outputs could be measured during each SAR step.</li>
+          <li><strong>Closed the loop carefully:</strong> tested comparator thresholds and timing to avoid “correct code, wrong physics.”</li>
+          <li><strong>Explained behavior:</strong> tied waveform shape to quantization, settling time, and threshold sensitivity.</li>
+          <li><strong>Iterated quickly:</strong> adjusted resistor tolerance assumptions and sampling timing based on scope evidence.</li>
+        </ul>
+
+        <h4 style="margin-top:12px;">What I’d optimize next</h4>
+        <ul>
+          <li>Increase resolution (bits) and analyze error sources (tolerances, offset, noise).</li>
+          <li>Improve settling and stability with buffering and cleaner reference behavior.</li>
+        </ul>
+      </article>
 
       <!-- RLC PROJECT -->
       <article class="card">
-        <h3>RLC Step Response (Under / Critical / Over Damping)</h3>
+        <h3>RLC Step Response — Under / Critical / Over Damping</h3>
 
         <p class="meta">
-          Characterized RLC transient behavior by sweeping resistance values and
-          comparing predicted vs. measured step responses. Related waveform shape
-          to damping ratio and system parameters.
+          Characterized RLC transient behavior by sweeping resistance values and comparing predicted vs. measured step responses.
+          The goal was to build intuition and communicate system dynamics clearly by connecting waveform shape to damping ratio
+          and key parameters.
         </p>
 
         <div class="pillrow">
@@ -135,35 +124,55 @@
           <span class="pill">System Damping</span>
         </div>
 
-        <div class="shot">
-          <img src="LTS RLC pf.JPG" alt="LTspice RLC simulation" />
-          <div class="cap">
-            LTspice simulation illustrating underdamped, critically damped, and overdamped regimes.
-          </div>
-        </div>
+        <h4 style="margin-top:16px;">How I worked</h4>
+        <ul>
+          <li><strong>Started from theory:</strong> derived ω₀ and ζ, then predicted expected response regimes before testing.</li>
+          <li><strong>Used simulation as a check, not a crutch:</strong> compared LTspice outputs against physical measurements.</li>
+          <li><strong>Made results legible:</strong> summarized each regime with “parameter change → damping shift → waveform effect.”</li>
+          <li><strong>Handled mismatch honestly:</strong> accounted for real-world non-idealities (component tolerance, probe loading).</li>
+        </ul>
 
-        <div class="shot" style="margin-top:16px;">
-          <iframe
-            src="RLC Calculations.pdf"
-            width="100%"
-            height="420"
-            style="border:none; border-radius:10px;"
-            title="RLC Calculations PDF">
-          </iframe>
-          <div class="cap">
-            Analytical derivation of natural frequency (ω₀), damping ratio (ζ),
-            and regime classification.
-          </div>
-        </div>
+        <h4 style="margin-top:12px;">What I’d optimize next</h4>
+        <ul>
+          <li>Run repeated trials and report confidence intervals across tolerance ranges.</li>
+          <li>Improve measurement fidelity with careful probing and controlled test conditions.</li>
+        </ul>
 
-        <div class="links">
+        <div class="links" style="margin-top:14px;">
           <a class="btn primary" href="RLC Calculations.pdf" target="_blank">
-            Open Full Calculations
+            Open Full Calculations (PDF)
           </a>
         </div>
       </article>
 
     </div>
+
+    <section class="section" style="margin-top: 22px;">
+      <h2>How I Work (Across Projects)</h2>
+      <div class="grid" style="margin-top: 12px;">
+        <div class="card">
+          <h3>Make ambiguity measurable</h3>
+          <p class="meta">
+            I define expected behavior up front, choose instruments/signals that reveal failure modes,
+            and treat every mismatch as a clue, not a setback.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Communicate clearly</h3>
+          <p class="meta">
+            I write and present results in a consistent structure: what we expected → what we observed → what we changed → what we learned.
+            This makes collaboration fast and decisions defensible.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Iterate with evidence</h3>
+          <p class="meta">
+            I optimize for quick, testable loops—small changes, targeted measurements, and clear tradeoffs 
+            to move from hypothesis to working system efficiently.
+          </p>
+        </div>
+      </div>
+    </section>
 
     <a class="back" href="index.html">← Back to Home</a>
 
