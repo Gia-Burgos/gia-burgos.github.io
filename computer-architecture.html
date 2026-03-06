@@ -1,94 +1,209 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Computer Hardware | Portfolio</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Computer Architecture | Giancarla Burgos</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/site.css">
   <script defer src="assets/site.js"></script>
-
-  
 </head>
+
 <body class="site">
 
-<main class="container doc">
-
-<header>
-  <h1>Computer Hardware</h1>
-  <p class="subtle">
-    A focused collection of digital design and computer architecture work, emphasizing clean structural HDL and datapath-level thinking.
-  </p>
-
-  <div class="nav">
-    <!-- Update these to match your real site structure -->
-    <a href="index.html">Main Portfolio</a>
-    <a href="computer-architecture.html">Hardware</a>
+<nav>
+  <div class="logo">Giancarla Burgos</div>
+  <div>
+    <a href="index.html">Home</a>
+    <a href="computer-architecture.html">Computer Architecture</a>
+    <a href="circuits.html">Circuits</a>
+    <a href="product-management.html">Product Management</a>
+    <a href="personal-projects.html">Personal Projects</a>
+    <a href="mailto:gburgos@harvard.college.edu">Contact</a>
   </div>
-</header>
+</nav>
 
-<section class="grid">
-  <article class="card">
-    <h2><a href="alu.html">32-bit ALU (System Verilog)</a></h2>
+<main class="wrap">
+
+  <section class="hero">
+    <h1><span>Computer Architecture</span></h1>
     <p>
-      Structural ALU supporting arithmetic, logic, comparison, and shifts with full flag generation and opcode-controlled output selection.
+      Selected digital design and architecture projects emphasizing clean structural HDL, datapath-level thinking,
+      and a verification-first workflow. I focus on making complex systems legible: clear module boundaries,
+      explicit control signals, and testbenches that tell you <em>what failed</em> and <em>why</em>.
     </p>
-    <div class="tags">
-      <span class="tag">SystemVerilog</span>
-      <span class="tag">Datapath Design</span>
-      <span class="tag">CLA</span>
-      <span class="tag">Mux Trees</span>
-    </div>
-  </article>
+  </section>
 
-  <!-- Add more hardware projects as you make them -->
+  <section class="section">
+    <h2>Highlighted Projects</h2>
 
-    <article class="card">
-    <h2><a href="tlc.html">Traffic Light Controller (Moore FSM)</a></h2>
-    <p>
-      One-hot Moore FSM driven by a 1 Hz tick + external 5-bit down-counter. Minimum green, cuttable extension window,
-      interlock all-red phases, and macro-based lamp/ped outputs.
-    </p>
-    <div class="tags">
-      <span class="tag">SystemVerilog</span>
-      <span class="tag">FSM</span>
-      <span class="tag">One-hot</span>
-      <span class="tag">Timer Handshake</span>
-      <span class="tag">Testbench</span>
-    </div>
-  </article>
+    <div class="grid">
 
-    <article class="card">
-    <h2><a href="cpu.html">Multicycle CPU</a></h2>
-    <p>
-      Multicycle CPU built with a clean datapath + FSM controller split. Progresses from an initial control-design plan
-      into a working core, then expands to immediates, memory access, and control flow (branches + jumps).
-    </p>
-    <div class="tags">
-      <span class="tag">SystemVerilog</span>
-      <span class="tag">CPU</span>
-      <span class="tag">FSM Control</span>
-      <span class="tag">Datapath</span>
-      <span class="tag">ISA</span>
-    </div>
-  </article>
-  
-  <article class="card">
-    <h2>More projects (coming soon)</h2>
-    <p>
-      This section will grow with additional modules (register files, control logic, pipelining, caches, etc.).
-    </p>
-    <div class="tags">
-      <span class="tag">In Progress</span>
-    </div>
-  </article>
-</section>
+      <!-- PROJECT 1: 32-bit ALU -->
+      <article class="card">
+        <h3>32-bit ALU (SystemVerilog)</h3>
 
+        <p class="meta">
+          Built a structural 32-bit ALU supporting arithmetic, logic, comparison, and shifts with flag generation and
+          opcode-controlled output selection. The goal was reliability and readability: predictable datapath behavior
+          and clear verification of edge cases.
+        </p>
+
+        <p class="small">
+          <strong>Tools / Topics:</strong> SystemVerilog · Datapath design · Carry-lookahead structure · Mux trees · Flags · Testbench
+        </p>
+
+        <h4 style="margin-top:16px;">How I worked</h4>
+        <ul>
+          <li><strong>Designed for clarity:</strong> separated sub-blocks (adder, logic unit, shifter) and combined outputs with explicit selection.</li>
+          <li><strong>Made behavior explicit:</strong> documented opcode → function mapping and flag semantics so review was fast.</li>
+          <li><strong>Verified edge cases:</strong> tested overflow, shift boundaries, and comparisons with representative vectors.</li>
+          <li><strong>Communicated in a checklist:</strong> “spec → implementation → tests → results,” so someone else could validate quickly.</li>
+        </ul>
+
+        <h4 style="margin-top:12px;">Implementation snapshot</h4>
+        <ul>
+          <li>Carry-lookahead style structure for predictable addition behavior with clean internal naming.</li>
+          <li>Unified result selection with an opcode-driven mux structure.</li>
+          <li>Flags generated from final output + arithmetic status signals.</li>
+        </ul>
+
+        <h4 style="margin-top:12px;">What I’d optimize next</h4>
+        <ul>
+          <li>Add randomized stimulus and functional coverage for stronger confidence.</li>
+          <li>Introduce lightweight assertions for invariants (e.g., Zero flag correctness).</li>
+        </ul>
+      </article>
+
+      <!-- PROJECT 2: MULTICYCLE CPU -->
+      <article class="card">
+        <h3>Multicycle CPU (SystemVerilog)</h3>
+
+        <p class="meta">
+          Built a multicycle CPU using a clean <strong>datapath + controller split</strong>. I followed a control-first workflow:
+          map instruction classes to a state machine, implement the baseline execute/writeback loop, then extend support
+          to immediates, memory operations, and control flow—without breaking the core architecture.
+        </p>
+
+        <p class="small">
+          <strong>Tools / Topics:</strong> SystemVerilog · CPU architecture · FSM controller · ISA reasoning · Branch/jump control · Verification programs
+        </p>
+
+        <h4 style="margin-top:16px;">What it supports</h4>
+        <ul>
+          <li><strong>R-type:</strong> add, sub, and, or, xor, nor, sll, srl, sra, slt</li>
+          <li><strong>I-type:</strong> addi, andi, ori, xori, slti</li>
+          <li><strong>Memory:</strong> lw / sw</li>
+          <li><strong>Control flow:</strong> beq, bne, j, jal, jr (+ nop)</li>
+        </ul>
+
+        <h4 style="margin-top:16px;">How I worked</h4>
+        <ul>
+          <li><strong>Control-first planning:</strong> wrote instruction paths and control signals per state before coding.</li>
+          <li><strong>Kept boundaries strict:</strong> datapath owns state; controller drives only control signals.</li>
+          <li><strong>Built incrementally:</strong> shipped R-type first, then expanded ISA support without reworking the architecture.</li>
+          <li><strong>Debugged transparently:</strong> used internal observability (PC/IR/ALUOut/state) to isolate failures to control vs datapath.</li>
+        </ul>
+
+        <h4 style="margin-top:12px;">Implementation snapshot</h4>
+        <ul>
+          <li>Controller FSM selects state path via opcode/funct (explicit paths for JR/JAL/branch/mem).</li>
+          <li>PC source mux supports PC+4, branch target, jump target, and JR (rs).</li>
+          <li>Immediate handling uses sign/zero extension based on instruction class.</li>
+          <li>Branch targets computed early; PC enable uses branch signal + ALU Zero for beq/bne.</li>
+        </ul>
+
+        <h4 style="margin-top:12px;">Verification approach</h4>
+        <ul>
+          <li><strong>R-type program:</strong> validated ALU ops and shifts.</li>
+          <li><strong>Mixed program:</strong> immediates + lw/sw + beq/bne + j/jal/jr to hit control edges.</li>
+          <li><strong>Debug discipline:</strong> tracked “expected vs observed” at state boundaries to catch off-by-one control bugs.</li>
+        </ul>
+
+        <h4 style="margin-top:12px;">What I’d optimize next</h4>
+        <ul>
+          <li>Add assertions for safety rules (e.g., RegWrite only in WB states; MemWrite only in SW state).</li>
+          <li>Increase coverage for corner cases (branch taken/not-taken, JR behavior, memory assumptions).</li>
+        </ul>
+      </article>
+
+      <!-- PROJECT 3: TLC FSM -->
+      <article class="card">
+        <h3>Traffic Light Controller (Moore FSM, One-hot)</h3>
+
+        <p class="meta">
+          Implemented a one-hot Moore FSM traffic light controller driven by a 1 Hz tick and an external 5-bit down-counter.
+          The design enforces minimum green, supports a cuttable extension window based on opposing demand, and includes
+          safe interlock all-red phases. Emphasis: deterministic timing and readable control logic.
+        </p>
+
+        <p class="small">
+          <strong>Tools / Topics:</strong> SystemVerilog · One-hot Moore FSM · Timer handshake · Deterministic timing · Instrumented testbench
+        </p>
+
+        <h4 style="margin-top:16px;">How I worked</h4>
+        <ul>
+          <li><strong>Defined invariants upfront:</strong> minimum green holds, interlock all-red occurs, outputs default safe.</li>
+          <li><strong>Designed handshake cleanly:</strong> timer loads only on state entry, durations mapped from state intent.</li>
+          <li><strong>Kept logic reviewable:</strong> one-hot encoding for easy inspection and fast debugging.</li>
+          <li><strong>Verified with instrumentation:</strong> logged loads and transitions to confirm timing + early-cut behavior.</li>
+        </ul>
+
+        <h4 style="margin-top:12px;">Implementation snapshot</h4>
+        <ul>
+          <li>Durations encoded as a small mapping (state → seconds), loaded on entry.</li>
+          <li>Extension window ends early when opposing demand is present (or timer expires).</li>
+          <li>Moore decode defaults to all-red / don’t-walk, overridden per active state.</li>
+        </ul>
+
+        <h4 style="margin-top:12px;">What I’d optimize next</h4>
+        <ul>
+          <li>Add self-checking assertions for timing and safety invariants.</li>
+          <li>Expand scenario set (bursty demand, alternating demand) and measure fairness properties.</li>
+        </ul>
+      </article>
+
+    </div>
+
+    <section class="section" style="margin-top: 22px;">
+      <h2>How I Work (Across Hardware Projects)</h2>
+      <div class="grid" style="margin-top: 12px;">
+        <div class="card">
+          <h3>Make systems legible</h3>
+          <p class="meta">
+            I design with clear boundaries (datapath vs control), explicit signals, and readable structure so
+            others can review or extend quickly.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Verify early, not at the end</h3>
+          <p class="meta">
+            I treat testbenches as communication tools: targeted stimuli, clear logs, and checks that narrow failures
+            to the right subsystem.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Communicate tradeoffs</h3>
+          <p class="meta">
+            I summarize consistently: what I planned → what I built → what I tested → what broke → what changed.
+            This keeps iteration fast and decisions defensible.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <a class="back" href="index.html">← Back to Home</a>
+
+  </section>
 
 </main>
+
+<footer>
+  © 2026 Giancarla Burgos · Built with GitHub Pages
+</footer>
 
 </body>
 </html>
