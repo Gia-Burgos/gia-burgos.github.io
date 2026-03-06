@@ -11,7 +11,6 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 :root{
   --max: 1120px;
   --pad: clamp(16px, 3vw, 32px);
@@ -32,6 +31,9 @@ html, body {
   --indigo: #4f46e5;
   --blue:   #0ea5e9;
   --pink:   #ec4899;
+
+  /* Add PRIMARY (you use var(--primary) in HTML) */
+  --primary: var(--indigo);
 
   /* Default theme = LIGHT */
   --bg: #f9fafb;
@@ -67,14 +69,18 @@ html[data-theme="dark"]{
   --surface: rgba(255,255,255,0.08);
   --surface-2: rgba(255,255,255,0.12);
 
+  /* Make ALL typography variables white-ish in dark mode */
   --text: rgba(255,255,255,0.92);
   --muted: rgba(255,255,255,0.75);
   --faint: rgba(255,255,255,0.58);
 
   --border: rgba(255,255,255,0.14);
 
+  /* Primary color in dark mode (pick white for headings) */
+  --primary: rgba(255,255,255,0.92);
+
   /* Hero bar colors (dark) */
-  --bar-1: rgba(79, 70, 229, 0.2);
+  --bar-1: rgba(79, 70, 229, 0.20);
   --bar-2: rgba(14, 165, 233, 0.18);
   --bar-3: rgba(124, 58, 237, 0.18);
   --bar-text: rgba(255,255,255,0.92);
@@ -90,10 +96,12 @@ html[data-theme="dark"]{
 /* Base */
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
-/* remove the gradients from `body` (keep var(--bg) if you want) */
+
+/* Background base (page) */
 body {
+  margin: 0;
+  color: var(--text);
   background: var(--bg);
-  /* optional: keep smoothing */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -102,7 +110,7 @@ body {
 html::before {
   content: "";
   position: fixed;
-  inset: 0;                /* top:0; right:0; bottom:0; left:0 */
+  inset: 0;
   z-index: -1;
   pointer-events: none;
   background-repeat: no-repeat;
@@ -113,10 +121,10 @@ html::before {
     radial-gradient(1100px 700px at 12% 8%, rgba(124,58,237,0.12), transparent 55%),
     radial-gradient(900px 650px at 88% 10%, rgba(14,165,233,0.10), transparent 55%),
     radial-gradient(900px 600px at 55% 92%, rgba(236,72,153,0.08), transparent 60%);
-  /* optional subtle overlay to blend into page bg */
   mix-blend-mode: normal;
   opacity: 1;
 }
+
 img{ max-width:100%; height:auto; display:block; }
 
 a{ color: inherit; text-decoration: none; }
