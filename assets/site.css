@@ -372,6 +372,26 @@ p{ color: var(--muted); line-height: 1.7; font-size: 1.02rem; margin: 10px 0; }
 .card h3{ margin:0 0 8px; font-weight: 740; }
 .card p{ margin: 8px 0 0; }
 
+
+/* ==========================
+   Concept highlight (for feature ideas)
+   ========================== */
+.card.concept{
+  border-color: rgba(124,58,237,0.35);
+  background: linear-gradient(180deg,
+    rgba(124,58,237,0.10),
+    rgba(14,165,233,0.06)
+  );
+}
+
+html[data-theme="dark"] .card.concept{
+  border-color: rgba(124,58,237,0.45);
+  background: linear-gradient(180deg,
+    rgba(124,58,237,0.16),
+    rgba(14,165,233,0.10)
+  );
+}
+
 /* Pills */
 .pillrow{ margin-top: 12px; display:flex; flex-wrap: wrap; gap: 8px; }
 .pill{
